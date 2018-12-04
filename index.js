@@ -1,6 +1,9 @@
 import { html, render } from "./node_modules/lit-html/lit-html.js";
 
-export class SevenSeg extends HTMLElement {
+const defaultBasefontsize = 120;
+const getLineWidth = basesize => basesize * 5.5;
+
+export default class NayucolonyLogo extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -8,10 +11,124 @@ export class SevenSeg extends HTMLElement {
   }
 
   get template() {
-    const segs = this.getAttribute("segs")
-      ? this.getAttribute("segs").split(",")
-      : [];
+    const basesize =
+      (this.getAttribute("basefontsize")
+        ? parseFloat(this.getAttribute("basefontsize"))
+        : defaultBasefontsize
+      ) / 120;
+    const lineWidth = getLineWidth(basesize);
+
+    return html`
+      <div class="w">
+        <div class="inner">
+          <seven-seg basesize="${basesize}" segs="bc,ef,i" margin="0 ${basesize * 18.25}px 0 0"></seven-seg>
+          <seven-seg basesize="${basesize}" segs="bc,ef,a,g"></seven-seg>
+          <seven-seg basesize="${basesize}" segs="b,f,g,h"></seven-seg>
+          <seven-seg basesize="${basesize}" segs="bc,ef,d"></seven-seg>
+          <seven-seg basesize="${basesize}" segs="ef,a,d"></seven-seg>
+          <seven-seg basesize="${basesize}" segs="bc,ef,a,d"></seven-seg>
+          <seven-seg basesize="${basesize}" segs="ef,d"></seven-seg>
+          <seven-seg basesize="${basesize}" segs="bc,ef,a,d"></seven-seg>
+          <seven-seg basesize="${basesize}" segs="bc,ef,i"></seven-seg>
+          <seven-seg basesize="${basesize}" segs="bc,d,f,g" margin="0 0 0 ${basesize * 18.25}px"></seven-seg>
+          <div class="horizon">
+            <div class="upper"></div>
+            <div class="middle"></div>
+            <div class="lower"></div>
+          </div>
+        </div>
+      </div>
+
+      <style>
+        .w {
+          padding: ${basesize * 40}px;
+          display: inline-block;
+          background-color: #fff;
+        }
+        .inner {
+          position: relative;
+          display: inline-flex;
+        }
+        .horizon {
+          position: absolute;
+          left: ${basesize * 65}px;
+          top: calc(50% - (${lineWidth / 2}px + ${basesize * 4}px));
+          height: calc(${basesize * 4}px + ${lineWidth}px + ${basesize * 4}px);
+          width: ${basesize * 520}px;
+        }
+        .horizon > .upper {
+          position: absolute;
+          top: 0;
+          height: ${basesize * 4}px;
+          width: ${basesize * 520}px;
+          background-color: #fff;
+        }
+        .horizon > .middle {
+          position: absolute;
+          top: ${basesize * 4}px;
+          height: ${lineWidth}px;
+          width: ${basesize * 520}px;
+          border-radius: ${lineWidth / 2}px;
+          background-color: #000;
+        }
+        .horizon > .lower {
+          position: absolute;
+          bottom: 0;
+          height: ${basesize * 4}px;
+          width: ${basesize * 520}px;
+          background-color: #fff;
+        }
+        .horizon::before {
+          content: "";
+          position: absolute;
+          left: ${basesize * 0.875}px;
+          bottom: ${lineWidth}px;
+          width: ${lineWidth}px;
+          height: ${basesize * 54}px;
+          background-color: #000;
+          border-radius: ${lineWidth / 2}px;
+          transform: rotate(-26.3deg);
+          transform-origin: right bottom;
+          z-index: 2;
+        }
+        .horizon::after {
+          content: "";
+          position: absolute;
+          right: ${basesize * 0.925}px;
+          bottom: ${lineWidth}px;
+          width: ${lineWidth}px;
+          height: ${basesize * 54.2}px;
+          background-color: #000;
+          border-radius: ${lineWidth / 2}px;
+          transform: rotate(26.8deg);
+          transform-origin: left bottom;
+          z-index: 2;
+        }
+      </style>
+    `;
+  }
+}
+
+class SevenSeg extends HTMLElement {
+  static get observedAttributes() {return ['basesize', "margin"]; }
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    render(this.template, this.shadowRoot);
+  }
+
+  attributeChangedCallback(attr, oldValue, newValue) {
+    if (attr === 'basesize' || attr === "margin") {
+      render(this.template, this.shadowRoot);
+    }
+  }
+
+  get template() {
+    const segs = this.getAttribute("segs") ? this.getAttribute("segs").split(",") : [];
     const margin = this.getAttribute("margin");
+    const basesize = this.getAttribute("basesize") ? parseFloat(this.getAttribute("basesize")) : defaultBasefontsize / 4;
+    const lineWidth = getLineWidth(basesize);
 
     return html`
       <div class="w">
@@ -34,34 +151,34 @@ export class SevenSeg extends HTMLElement {
         }
         .w {
           position: relative;
-          height: 370px;
-          width: 196px;
-          margin: ${margin ? margin : "0 31px"};
+          height: ${basesize * 92.5}px;
+          width: ${basesize * 49}px;
+          margin: ${margin ? margin : `0 ${basesize * 7.75}px`};
         }
         .w > div {
           position: absolute;
           background-color: #000;
-          border-radius: 11px;
+          border-radius: ${lineWidth / 2}px;
         }
 
         .a,
         .d,
         .g {
-          height: 22px;
-          width: 196px;
+          height: ${lineWidth}px;
+          width: ${basesize * 49}px;
         }
         .b,
         .c,
         .e,
         .f,
         .h {
-          height: calc(370px / 2);
-          width: 22px;
+          height: calc(${basesize * 92.5}px / 2);
+          width: ${lineWidth}px;
         }
         .bc,
         .ef {
-          height: 370px;
-          width: 22px;
+          height: ${basesize * 92.5}px;
+          width: ${lineWidth}px;
         }
 
         .a {
@@ -99,129 +216,24 @@ export class SevenSeg extends HTMLElement {
         }
         .g {
           display: ${segs.includes("g") ? "block" : "none"};
-          top: calc(50% - 11px);
+          top: calc(50% - ${lineWidth}px);
         }
         .h {
           display: ${segs.includes("h") ? "block" : "none"};
-          left: calc(50% - 11px);
+          left: calc(50% - ${lineWidth}px);
           bottom: 0;
         }
         .i {
           display: ${segs.includes("i") ? "block" : "none"};
-          height: 410.5px;
-          width: 22px;
+          height: ${basesize * 102.625}px;
+          width: ${lineWidth}px;
           transform: rotate(-26.45deg);
           transform-origin: left top;
-          left: -3px;
-          top: 6px;
+          left: ${basesize * -0.75}px;
+          top: ${basesize * 1.5}px;
         }
       </style>
     `;
   }
 }
 window.customElements.define("seven-seg", SevenSeg);
-
-export class NayucolonyLogo extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    render(this.template, this.shadowRoot);
-  }
-
-  get template() {
-    const basesize =
-      (this.getAttribute("basesize")
-        ? parseFloat(this.getAttribute("basesize"))
-        : 16) / 4;
-    console.log("basesize", basesize);
-
-    return html`
-      <div class="w">
-        <div class="inner">
-          <seven-seg segs="bc,ef,i" margin="0 73px 0 0"></seven-seg>
-          <seven-seg segs="bc,ef,a,g"></seven-seg>
-          <seven-seg segs="b,f,g,h"></seven-seg>
-          <seven-seg segs="bc,ef,d"></seven-seg>
-          <seven-seg segs="ef,a,d"></seven-seg>
-          <seven-seg segs="bc,ef,a,d"></seven-seg>
-          <seven-seg segs="ef,d"></seven-seg>
-          <seven-seg segs="bc,ef,a,d"></seven-seg>
-          <seven-seg segs="bc,ef,i"></seven-seg>
-          <seven-seg segs="bc,d,f,g" margin="0 0 0 73px"></seven-seg>
-          <div class="horizon">
-            <div class="upper"></div>
-            <div class="middle"></div>
-            <div class="lower"></div>
-          </div>
-        </div>
-      </div>
-
-      <style>
-        .w {
-          padding: 120px;
-          display: inline-block;
-          background-color: #fff;
-        }
-        .inner {
-          position: relative;
-          display: inline-flex;
-        }
-        .horizon {
-          position: absolute;
-          left: 260px;
-          top: calc(50% - (11px + 16px));
-          height: calc(16px + 22px + 16px);
-          width: 2080px;
-        }
-        .horizon > .upper {
-          position: absolute;
-          top: 0;
-          height: 16px;
-          width: 2080px;
-          background-color: #fff;
-        }
-        .horizon > .middle {
-          position: absolute;
-          top: 16px;
-          height: 22px;
-          width: 2080px;
-          border-radius: 11px;
-          background-color: #000;
-        }
-        .horizon > .lower {
-          position: absolute;
-          bottom: 0;
-          height: 16px;
-          width: 2080px;
-          background-color: #fff;
-        }
-        .horizon::before {
-          content: "";
-          position: absolute;
-          left: 3.5px;
-          bottom: 22px;
-          width: 22px;
-          height: 216px;
-          background-color: #000;
-          border-radius: 11px;
-          transform: rotate(-26.3deg);
-          transform-origin: right bottom;
-          z-index: 2;
-        }
-        .horizon::after {
-          content: "";
-          position: absolute;
-          right: 3.7px;
-          bottom: 22px;
-          width: 22px;
-          height: 216.8px;
-          background-color: #000;
-          border-radius: 11px;
-          transform: rotate(26.8deg);
-          transform-origin: left bottom;
-          z-index: 2;
-        }
-      </style>
-    `;
-  }
-}
