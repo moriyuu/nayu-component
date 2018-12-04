@@ -7,7 +7,20 @@
     <title>NAYUCOLONY</title>
   </head>
   <body>
-    <h1>NAYUCOLONY</h1>
-    <script src="index.js"></script>
+    <h1>NayucolonyLogo2</h1>
+
+    <nayucolony-logo />
+
+    <style>
+        body {
+            background-color: #f8f8f8;
+        }
+    </style>
+  
+
+    <script type="module">
+      import {NayucolonyLogo} from './index.js';
+      window.customElements.define("nayucolony-logo", NayucolonyLogo);
+    </script>
   </body>
 </html>
