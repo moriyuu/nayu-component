@@ -1,12 +1,13 @@
+import { html, render } from "https://unpkg.com/lit-html?module";
+
 const defaultBasefontsize = 120;
 const getLineWidth = basesize => basesize * 5.5;
 
 export default class NayucolonyLogo extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({
-      mode: "open"
-    }).innerHTML = this.template;
+    this.attachShadow({ mode: "open" });
+    render(this.template, this.shadowRoot);
   }
 
   get template() {
@@ -16,7 +17,7 @@ export default class NayucolonyLogo extends HTMLElement {
         : defaultBasefontsize) / 120;
     const lineWidth = getLineWidth(basesize);
 
-    return `
+    return html`
       <div class="w">
         <div class="inner">
           <seven-seg
@@ -122,9 +123,14 @@ class SevenSeg extends HTMLElement {
 
   constructor() {
     super();
-    this.attachShadow({
-      mode: "open"
-    }).innerHTML = this.template;
+    this.attachShadow({ mode: "open" });
+    render(this.template, this.shadowRoot);
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "segs" || name === "margin" || name === "basesize") {
+      render(this.template, this.shadowRoot);
+    }
   }
 
   get template() {
@@ -137,7 +143,7 @@ class SevenSeg extends HTMLElement {
       : defaultBasefontsize / 4;
     const lineWidth = getLineWidth(basesize);
 
-    return `
+    return html`
       <div class="w">
         <div class="a"></div>
         <div class="b"></div>
