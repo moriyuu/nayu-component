@@ -2,6 +2,35 @@ import { html, render } from "./node_modules/lit-html/lit-html.js";
 
 const defaultBasefontsize = 120;
 const getLineWidth = basesize => basesize * 5.5;
+const charSegs = {
+  a: ["bc", "ef", "a", "g"],
+  b: ["ef", "c", "d", "g"],
+  c: ["ef", "a", "d"],
+  d: ["bc", "d", "e", "g"],
+  e: ["ef", "a", "d", "g"],
+  f: ["ef", "a", "g"],
+  g: ["ef", "a", "c", "d"],
+  h: ["bc", "ef", "g"],
+  i: ["hi", "a", "d"],
+  j: ["bc", "d"],
+  k: [],
+  l: ["ef", "d"],
+  m: ["bc", "ef", "hi", "a"],
+  n: ["bc", "ef", "j"],
+  o: ["bc", "ef", "a", "d"],
+  p: ["ef", "a", "b", "g"],
+  q: ["bc", "a", "f", "g"],
+  r: [],
+  s: ["a", "c", "d", "f", "g"],
+  t: ["hi", "a"],
+  u: ["bc", "ef", "d"],
+  v: [],
+  w: ["bc", "ef", "hi", "d"],
+  x: ["j", "k"],
+  y: ["b", "f", "g", "i"],
+  y2: ["bc", "d", "f", "g"],
+  z: ["a", "d", "k"]
+};
 
 export default class NayucolonyLogo extends HTMLElement {
   constructor() {
@@ -14,23 +43,39 @@ export default class NayucolonyLogo extends HTMLElement {
     const basesize =
       (this.getAttribute("basefontsize")
         ? parseFloat(this.getAttribute("basefontsize"))
-        : defaultBasefontsize
-      ) / 120;
+        : defaultBasefontsize) / 120;
     const lineWidth = getLineWidth(basesize);
+    const chars = (this.getAttribute("value") || "nayucolony")
+      .split("")
+      .map((c, i, arr) => {
+        const char = i === arr.length - 1 && c === "y" ? "y2" : c;
+        return {
+          char,
+          segs: charSegs[char]
+        };
+      });
 
     return html`
       <div class="w">
         <div class="inner">
-          <seven-seg basesize="${basesize}" segs="bc,ef,i" margin="0 ${basesize * 18.25}px 0 0"></seven-seg>
-          <seven-seg basesize="${basesize}" segs="bc,ef,a,g"></seven-seg>
-          <seven-seg basesize="${basesize}" segs="b,f,g,h"></seven-seg>
-          <seven-seg basesize="${basesize}" segs="bc,ef,d"></seven-seg>
-          <seven-seg basesize="${basesize}" segs="ef,a,d"></seven-seg>
-          <seven-seg basesize="${basesize}" segs="bc,ef,a,d"></seven-seg>
-          <seven-seg basesize="${basesize}" segs="ef,d"></seven-seg>
-          <seven-seg basesize="${basesize}" segs="bc,ef,a,d"></seven-seg>
-          <seven-seg basesize="${basesize}" segs="bc,ef,i"></seven-seg>
-          <seven-seg basesize="${basesize}" segs="bc,d,f,g" margin="0 0 0 ${basesize * 18.25}px"></seven-seg>
+          ${
+            chars.map(
+              (c, i) =>
+                html`
+                  <seven-seg
+                    segs="${c.segs.join(",")}"
+                    basesize="${basesize}"
+                    margin="${
+                      i === 0
+                        ? `0 ${basesize * 18.25}px 0 0`
+                        : i === chars.length - 1
+                        ? `0 0 0 ${basesize * 18.25}px`
+                        : `0 ${basesize * 7.75}px`
+                    }"
+                  ></seven-seg>
+                `
+            )
+          }
           <div class="horizon">
             <div class="upper"></div>
             <div class="middle"></div>
@@ -54,20 +99,20 @@ export default class NayucolonyLogo extends HTMLElement {
           left: ${basesize * 65}px;
           top: calc(50% - (${lineWidth / 2}px + ${basesize * 4}px));
           height: calc(${basesize * 4}px + ${lineWidth}px + ${basesize * 4}px);
-          width: ${basesize * 520}px;
+          width: ${basesize * (chars.length - 2) * 65}px;
         }
         .horizon > .upper {
           position: absolute;
           top: 0;
           height: ${basesize * 4}px;
-          width: ${basesize * 520}px;
+          width: ${basesize * (chars.length - 2) * 65}px;
           background-color: #fff;
         }
         .horizon > .middle {
           position: absolute;
           top: ${basesize * 4}px;
           height: ${lineWidth}px;
-          width: ${basesize * 520}px;
+          width: ${basesize * (chars.length - 2) * 65}px;
           border-radius: ${lineWidth / 2}px;
           background-color: #000;
         }
@@ -75,7 +120,7 @@ export default class NayucolonyLogo extends HTMLElement {
           position: absolute;
           bottom: 0;
           height: ${basesize * 4}px;
-          width: ${basesize * 520}px;
+          width: ${basesize * (chars.length - 2) * 65}px;
           background-color: #fff;
         }
         .horizon::before {
@@ -110,7 +155,9 @@ export default class NayucolonyLogo extends HTMLElement {
 }
 
 class SevenSeg extends HTMLElement {
-  static get observedAttributes() {return ['basesize', "margin"]; }
+  static get observedAttributes() {
+    return ["segs", "basesize", "margin"];
+  }
 
   constructor() {
     super();
@@ -119,17 +166,22 @@ class SevenSeg extends HTMLElement {
   }
 
   attributeChangedCallback(attr, oldValue, newValue) {
-    if (attr === 'basesize' || attr === "margin") {
+    if (attr === "segs" || attr === "basesize" || attr === "margin") {
       render(this.template, this.shadowRoot);
     }
   }
 
   get template() {
-    const segs = this.getAttribute("segs") ? this.getAttribute("segs").split(",") : [];
+    const segs = this.getAttribute("segs")
+      ? this.getAttribute("segs").split(",")
+      : [];
     const margin = this.getAttribute("margin");
-    const basesize = this.getAttribute("basesize") ? parseFloat(this.getAttribute("basesize")) : defaultBasefontsize / 4;
+    const basesize = this.getAttribute("basesize")
+      ? parseFloat(this.getAttribute("basesize"))
+      : defaultBasefontsize / 4;
     const lineWidth = getLineWidth(basesize);
 
+    console.log(segs);
     return html`
       <div class="w">
         <div class="a"></div>
@@ -141,8 +193,12 @@ class SevenSeg extends HTMLElement {
         <div class="f"></div>
         <div class="ef"></div>
         <div class="g"></div>
+
         <div class="h"></div>
         <div class="i"></div>
+        <div class="hi"></div>
+        <div class="j"></div>
+        <div class="k"></div>
       </div>
 
       <style>
@@ -153,7 +209,7 @@ class SevenSeg extends HTMLElement {
           position: relative;
           height: ${basesize * 92.5}px;
           width: ${basesize * 49}px;
-          margin: ${margin ? margin : `0 ${basesize * 7.75}px`};
+          margin: ${margin};
         }
         .w > div {
           position: absolute;
@@ -171,12 +227,14 @@ class SevenSeg extends HTMLElement {
         .c,
         .e,
         .f,
-        .h {
+        .h,
+        .i {
           height: calc(${basesize * 92.5}px / 2);
           width: ${lineWidth}px;
         }
         .bc,
-        .ef {
+        .ef,
+        .hi {
           height: ${basesize * 92.5}px;
           width: ${lineWidth}px;
         }
@@ -220,16 +278,34 @@ class SevenSeg extends HTMLElement {
         }
         .h {
           display: ${segs.includes("h") ? "block" : "none"};
-          left: calc(50% - ${lineWidth}px);
-          bottom: 0;
+          left: calc(50% - (${lineWidth}px / 2));
+          top: 0;
         }
         .i {
           display: ${segs.includes("i") ? "block" : "none"};
+          left: calc(50% - (${lineWidth}px / 2));
+          bottom: 0;
+        }
+        .hi {
+          display: ${segs.includes("hi") ? "block" : "none"};
+          left: calc(50% - (${lineWidth}px / 2));
+        }
+        .j {
+          display: ${segs.includes("j") ? "block" : "none"};
           height: ${basesize * 102.625}px;
           width: ${lineWidth}px;
           transform: rotate(-26.45deg);
           transform-origin: left top;
           left: ${basesize * -0.75}px;
+          top: ${basesize * 1.5}px;
+        }
+        .k {
+          display: ${segs.includes("k") ? "block" : "none"};
+          height: ${basesize * 102.625}px;
+          width: ${lineWidth}px;
+          transform: rotate(26.45deg);
+          transform-origin: right top;
+          right: ${basesize * -0.75}px;
           top: ${basesize * 1.5}px;
         }
       </style>

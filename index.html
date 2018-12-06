@@ -7,30 +7,32 @@
     <title>NAYUCOLONY</title>
   </head>
   <body>
-    <h1>
-      ナユ・コンポーネント
-    </h1>
+    <h1>ナユ・コンポーネント</h1>
 
     <nayucolony-logo></nayucolony-logo>
+    <nayucolony-logo value="abcdefghijklmn"></nayucolony-logo>
+    <nayucolony-logo value="opqrstu"></nayucolony-logo>
+    <nayucolony-logo value="vwxyz"></nayucolony-logo>
+    <nayucolony-logo value="moriyuu"></nayucolony-logo>
 
     <div>NAYUCOLONY</div>
 
     <style>
-        body {
-          background-color: #f8f8f8;
-        }
-        div {
-          font-size: 120px;
-          font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
-          margin: 0;
-          letter-spacing: -0.05em;
-          padding: 0 30px;
-        }
+      body {
+        background-color: #f8f8f8;
+      }
+      div {
+        font-size: 120px;
+        font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro,
+          monospace;
+        margin: 0;
+        letter-spacing: -0.05em;
+        padding: 0 30px;
+      }
     </style>
-  
 
     <script type="module">
-      import NayucolonyLogo from './index.js';
+      import NayucolonyLogo from "./index.js";
       window.customElements.define("nayucolony-logo", NayucolonyLogo);
     </script>
   </body>
