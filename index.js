@@ -1,27 +1,29 @@
-import { html, render } from "./node_modules/lit-html/lit-html.js";
-
 const defaultBasefontsize = 120;
 const getLineWidth = basesize => basesize * 5.5;
 
 export default class NayucolonyLogo extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
-    render(this.template, this.shadowRoot);
+    this.attachShadow({
+      mode: "open"
+    }).innerHTML = this.template;
   }
 
   get template() {
     const basesize =
       (this.getAttribute("basefontsize")
         ? parseFloat(this.getAttribute("basefontsize"))
-        : defaultBasefontsize
-      ) / 120;
+        : defaultBasefontsize) / 120;
     const lineWidth = getLineWidth(basesize);
 
-    return html`
+    return `
       <div class="w">
         <div class="inner">
-          <seven-seg basesize="${basesize}" segs="bc,ef,i" margin="0 ${basesize * 18.25}px 0 0"></seven-seg>
+          <seven-seg
+            basesize="${basesize}"
+            segs="bc,ef,i"
+            margin="0 ${basesize * 18.25}px 0 0"
+          ></seven-seg>
           <seven-seg basesize="${basesize}" segs="bc,ef,a,g"></seven-seg>
           <seven-seg basesize="${basesize}" segs="b,f,g,h"></seven-seg>
           <seven-seg basesize="${basesize}" segs="bc,ef,d"></seven-seg>
@@ -30,7 +32,11 @@ export default class NayucolonyLogo extends HTMLElement {
           <seven-seg basesize="${basesize}" segs="ef,d"></seven-seg>
           <seven-seg basesize="${basesize}" segs="bc,ef,a,d"></seven-seg>
           <seven-seg basesize="${basesize}" segs="bc,ef,i"></seven-seg>
-          <seven-seg basesize="${basesize}" segs="bc,d,f,g" margin="0 0 0 ${basesize * 18.25}px"></seven-seg>
+          <seven-seg
+            basesize="${basesize}"
+            segs="bc,d,f,g"
+            margin="0 0 0 ${basesize * 18.25}px"
+          ></seven-seg>
           <div class="horizon">
             <div class="upper"></div>
             <div class="middle"></div>
@@ -110,27 +116,28 @@ export default class NayucolonyLogo extends HTMLElement {
 }
 
 class SevenSeg extends HTMLElement {
-  static get observedAttributes() {return ['basesize', "margin"]; }
+  static get observedAttributes() {
+    return ["basesize", "margin"];
+  }
 
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
-    render(this.template, this.shadowRoot);
-  }
-
-  attributeChangedCallback(attr, oldValue, newValue) {
-    if (attr === 'basesize' || attr === "margin") {
-      render(this.template, this.shadowRoot);
-    }
+    this.attachShadow({
+      mode: "open"
+    }).innerHTML = this.template;
   }
 
   get template() {
-    const segs = this.getAttribute("segs") ? this.getAttribute("segs").split(",") : [];
+    const segs = this.getAttribute("segs")
+      ? this.getAttribute("segs").split(",")
+      : [];
     const margin = this.getAttribute("margin");
-    const basesize = this.getAttribute("basesize") ? parseFloat(this.getAttribute("basesize")) : defaultBasefontsize / 4;
+    const basesize = this.getAttribute("basesize")
+      ? parseFloat(this.getAttribute("basesize"))
+      : defaultBasefontsize / 4;
     const lineWidth = getLineWidth(basesize);
 
-    return html`
+    return `
       <div class="w">
         <div class="a"></div>
         <div class="b"></div>
