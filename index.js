@@ -3,7 +3,7 @@ import { html, render } from "https://unpkg.com/lit-html?module";
 const defaultBasefontsize = 120;
 const getLineWidth = basesize => basesize * 5.5;
 
-export default class NayucolonyLogo extends HTMLElement {
+export default class NayuComponent extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
