@@ -1,4 +1,4 @@
-import { html, render } from "https://unpkg.com/lit-html?module";
+import { html, render } from "https://unpkg.com/lit-html@0.14.0/lit-html.js";
 
 const defaultBasefontsize = 120;
 const getLineWidth = basesize => basesize * 5.5;
